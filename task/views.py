@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from .forms import TaskEditForm
+from django.contrib import messages
 
 # API Views.
 
@@ -161,14 +162,14 @@ def user_registration(request):
     return render(request, "registration.html")
 
 
-@login_required(login_url="login")
+@login_required(login_url="user_login")
 def view_task(request, id):
     task = Task.objects.prefetch_related("images").get(id=id)
     # images = task.images.all()
     return render(request, "view_task.html", {"task": task})
 
 
-@login_required(login_url="login")
+@login_required(login_url="user_login")
 def edit_task(request, id):
     task = Task.objects.get(id=id)
     if request.method == "POST":
@@ -182,7 +183,7 @@ def edit_task(request, id):
     return render(request, "task_edit.html", {"form": form})
 
 
-@login_required(login_url="login")
+@login_required(login_url="user_login")
 def delete_task(request, id):
     task = Task.objects.prefetch_related("images").get(id=id)
     task.delete()
@@ -208,3 +209,20 @@ def add_task(request):
         Image.objects.bulk_create(bulk_images)
         return redirect("view_task", id=task.id)
     return render(request, "add_task.html")
+
+
+@login_required(login_url="user_login")
+def change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get("old_password")
+        new_password = request.POST.get("new_password")
+        user = request.user
+        if user.check_password(old_password):
+            user.set_password(new_password)
+            user.save()
+            return redirect("user_login")
+
+    return render(
+        request,
+        "reset_password.html",
+    )

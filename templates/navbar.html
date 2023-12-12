@@ -16,7 +16,9 @@
             <ul class="flex flex-col gap-y-4 sm:flex-row sm:gap-x-8">
                 <li class=""><a class="text-gray-600 hover:text-blue-600" href="{% url 'home' %}">All Task</a></li>
                 <li class=""><a class="text-gray-600 hover:text-blue-600" href="{% url 'add_task' %}">Add Task</a></li>
-                <li class=""><a class="text-gray-600 hover:text-blue-600" href="#">Support</a></li>
+                <li class=""><a class="text-gray-600 hover:text-blue-600" href="{% url 'change_password' %}">Change
+                        Password</a></li>
+
                 {% if user.is_authenticated %}
                 <form action="{% url 'user_logout' %}" method="post">
                     {% csrf_token %}
