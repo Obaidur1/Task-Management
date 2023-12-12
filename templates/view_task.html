@@ -77,7 +77,7 @@
     <h1 class="text-3xl">Images</h1>
     <div class="flex">
         {% for image in task.images.all %}
-        <img class="rounded-lg m-2" width="200px" src="{{image.image.url}}" alt="">
+        <img class="rounded-lg m-2 shadow-xl" width="200px" src="{{image.image.url}}" alt="">
         {% endfor %}
     </div>
 </div>

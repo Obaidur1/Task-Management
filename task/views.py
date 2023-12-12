@@ -161,12 +161,14 @@ def user_registration(request):
     return render(request, "registration.html")
 
 
+@login_required(login_url="login")
 def view_task(request, id):
     task = Task.objects.prefetch_related("images").get(id=id)
     # images = task.images.all()
     return render(request, "view_task.html", {"task": task})
 
 
+@login_required(login_url="login")
 def edit_task(request, id):
     task = Task.objects.get(id=id)
     if request.method == "POST":
@@ -180,7 +182,29 @@ def edit_task(request, id):
     return render(request, "task_edit.html", {"form": form})
 
 
+@login_required(login_url="login")
 def delete_task(request, id):
     task = Task.objects.prefetch_related("images").get(id=id)
     task.delete()
     return redirect("home")
+
+
+def add_task(request):
+    if request.method == "POST":
+        images = request.FILES.getlist("images")
+        user = request.user
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        due_date = request.POST.get("due_date")
+        priority = request.POST.get("priority")
+        task = Task.objects.create(
+            user=user,
+            title=title,
+            description=description,
+            due_date=due_date,
+            priority=priority,
+        )
+        bulk_images = [Image(task=task, image=image) for image in images]
+        Image.objects.bulk_create(bulk_images)
+        return redirect("view_task", id=task.id)
+    return render(request, "add_task.html")

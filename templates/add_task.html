@@ -1,7 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
 <section class="bg-white ">
     <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16">
         <h2 class="mb-4 text-xl font-bold text-gray-900 ">Add a new Task</h2>
-        <form id="my_form" enctype="multipart/form-data" method="post" action="{% url 'handletask' %}">
+        <form id="my_form" enctype="multipart/form-data" method="post">
             {% csrf_token %}
             <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div class="sm:col-span-2">
@@ -42,8 +44,6 @@
                     class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50  focus:outline-none"
                     name="images" type="file" multiple>
 
-
-
             </div>
             <button type="submit"
                 class="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-gray-700 rounded-lg focus:ring-4 focus:ring-primary-200 ">
@@ -52,3 +52,5 @@
         </form>
     </div>
 </section>
+
+{% endblock %}
