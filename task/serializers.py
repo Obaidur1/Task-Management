@@ -6,7 +6,7 @@ from .models import Task, Image
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "first_name", "last_name", "username"]
+        fields = ["first_name", "last_name", "username", "password"]
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -21,4 +21,3 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = "__all__"
-        # exclude = ("user",)

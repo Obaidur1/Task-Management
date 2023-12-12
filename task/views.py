@@ -2,6 +2,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 
 from django.contrib.auth import authenticate
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from .models import Image, Task
 from .serializers import TaskSerializer
+from django.shortcuts import get_object_or_404
 
 
 # Create your views here.
@@ -52,11 +54,6 @@ class HandleTask(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        tasks = Task.objects.prefetch_related("images").filter(user=request.user)
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
-
     def post(self, request):
         user = request.user
         print(user)
@@ -76,3 +73,39 @@ class HandleTask(APIView):
         if BulkImage:
             Image.objects.bulk_create(BulkImage)
         return Response("received", status=201)
+
+
+class TaskViewSet(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        tasks = Task.objects.prefetch_related("images").filter(user=request.user)
+        serializer = TaskSerializer(tasks, many=True, context={"request": request})
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk):
+        task = Task.objects.prefetch_related("images").get(pk=pk)
+        serializer = TaskSerializer(task, context={"request": request})
+        return Response(serializer.data)
+
+    def update(self, request, pk):
+        task = Task.objects.prefetch_related("images").get(pk=pk)
+        print(request.data)
+        if task:
+            task.title = request.data.get("title")
+            task.description = request.data.get("description")
+            task.due_date = request.data.get("due_date")
+            task.priority = request.data.get("priority")
+            task.mark_as_completed = request.data.get("mark_as_completed")
+            task.save()
+            return Response(TaskSerializer(task, context={"request": request}).data)
+        return Response("Task not found!", status=404)
+
+    def destroy(self, request, pk):
+        task = Task.objects.prefetch_related("images").get(pk=pk)
+        if task:
+            task.delete()
+            return Response("Task deleted successfully")
+        else:
+            return Response("Task Not found!", status=404)
