@@ -40,8 +40,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "task",
+    "crispy_forms",
+    "crispy_tailwind",
 ]
+CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 
+CRISPY_TEMPLATE_PACK = "tailwind"
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -108,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Dhaka"
 
 USE_I18N = True
 

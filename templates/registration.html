@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="lg:m-10">
+    <form method="post"
+        class="relative border border-gray-100 space-y-3 max-w-screen-md mx-auto rounded-md bg-white p-6 shadow-xl lg:p-10">
+        {% csrf_token %}
+        <h1 class="mb-6 text-xl font-semibold lg:text-2xl">Register</h1>
+
+        <div class="grid gap-3 md:grid-cols-2">
+            <div>
+                <label class=""> First Name </label>
+                <input type="text" name="first_name" placeholder="First Name"
+                    class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3" />
+            </div>
+            <div>
+                <label class=""> Last Name </label>
+                <input type="text" name="last_name" placeholder="Last  Name"
+                    class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3" />
+            </div>
+        </div>
+        <div>
+            <label class=""> Username </label>
+            <input type="text" name="username" placeholder="Username"
+                class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3" />
+        </div>
+
+        <div>
+            <label class=""> Password </label>
+            <input type="text" name="password" placeholder="Password 8 character"
+                class="mt-2 h-12 w-full rounded-md bg-gray-100 px-3" />
+        </div>
+
+
+        <div>
+            <button type="submit"
+                class="mt-5 w-full rounded-md bg-blue-600 p-2 text-center font-semibold text-white">Register</button>
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}

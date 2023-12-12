@@ -7,15 +7,17 @@ from rest_framework.authtoken.models import Token
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Image, Task
 from .serializers import TaskSerializer
 from django.shortcuts import get_object_or_404
 
+# imports for django template views
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from .forms import TaskEditForm
 
-# Create your views here.
-def index(request):
-    return render(request, "index.html")
+# API Views.
 
 
 class Handle_Registration(APIView):
@@ -23,7 +25,6 @@ class Handle_Registration(APIView):
         data = request.data
         username = data.get("username")
         password = data.get("password")
-        # email = data.get("email")
         first_name = data.get("first_name")
         last_name = data.get("last_name")
         try:
@@ -109,3 +110,77 @@ class TaskViewSet(viewsets.ViewSet):
             return Response("Task deleted successfully")
         else:
             return Response("Task Not found!", status=404)
+
+
+# Views for Django Templates
+
+
+@login_required
+def index(request):
+    params = request.GET.get("search")
+    if params:
+        tasks = Task.objects.prefetch_related("images").filter(
+            user=request.user, title__contains=params
+        )
+    else:
+        tasks = Task.objects.prefetch_related("images").filter(user=request.user)
+    return render(request, "all_task.html", {"tasks": tasks})
+
+
+def user_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("home")
+        else:
+            return redirect("user_login")
+    return render(request, "login.html")
+
+
+@login_required(login_url="user_login")
+def user_logout(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect("user_login")
+
+
+def user_registration(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        user = User.objects.create_user(username=username, password=password)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+        return redirect("user_login")
+    return render(request, "registration.html")
+
+
+def view_task(request, id):
+    task = Task.objects.prefetch_related("images").get(id=id)
+    # images = task.images.all()
+    return render(request, "view_task.html", {"task": task})
+
+
+def edit_task(request, id):
+    task = Task.objects.get(id=id)
+    if request.method == "POST":
+        form = TaskEditForm(data=request.POST, instance=task)
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
+        return redirect("view_task", id=id)
+
+    form = TaskEditForm(instance=task)
+    return render(request, "task_edit.html", {"form": form})
+
+
+def delete_task(request, id):
+    task = Task.objects.prefetch_related("images").get(id=id)
+    task.delete()
+    return redirect("home")

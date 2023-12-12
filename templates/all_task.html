@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;1,600&display=swap"
+    rel="stylesheet" />
+<style>
+    * {
+        font-family: 'Source Sans Pro';
+    }
+</style>
+<div class="w-screen">
+    <div class="mx-auto mt-8 max-w-screen-lg px-2">
+        <div class="sm:flex sm:items-center sm:justify-between flex-col sm:flex-row">
+            <p class="flex-1 text-base font-bold text-gray-900">Latest Task</p>
+            <div class="mt-4 sm:mt-0">
+                <div class="flex items-center justify-start sm:justify-end">
+                    <div class="flex items-center">
+                        <label for="" class="mr-2 flex-shrink-0 text-sm font-medium text-gray-900"> Sort by: </label>
+                        <select name=""
+                            class="sm: mr-4 block w-full whitespace-pre rounded-lg border p-1 pr-10 text-base outline-none focus:shadow sm:text-sm">
+                            <option class="whitespace-no-wrap text-sm">Recent</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <form
+                            class="relative mx-auto flex w-full max-w-2xl items-center justify-between rounded-md border shadow-lg">
+
+                            <input type="name" name="search"
+                                class="h-14 w-full rounded-md py-4 pr-40 pl-12 outline-none focus:ring-2"
+                                placeholder="Search by Title" />
+                            <button type="submit"
+                                class="absolute right-0 mr-1 inline-flex h-12 items-center justify-center rounded-lg bg-gray-900 px-10 font-medium text-white focus:ring-4 hover:bg-gray-700">Search</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 overflow-hidden rounded-xl border shadow">
+            <table class="min-w-full border-separate border-spacing-y-2 border-spacing-x-2">
+                <thead class="hidden border-b lg:table-header-group">
+                    <tr class="">
+                        <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Title
+                        </td>
+                        <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Description</td>
+
+                        <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Priority</td>
+
+                        <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Due Date</td>
+
+                        <td class="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-6">Status</td>
+                    </tr>
+                </thead>
+
+                <tbody class="lg:border-gray-300">
+                    {% for task in tasks %}
+                    <tr class="">
+                        <td class="whitespace-no-wrap py-4 text-sm font-bold text-gray-900 sm:px-6">
+                            <a href="{% url 'view_task' task.id %}">{{task.title}}</a>
+                        </td>
+
+                        <td
+                            class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
+                            {{task.description}}</td>
+
+                        <td class="whitespace-no-wrap py-4 px-6 text-right text-sm text-gray-600 lg:text-left">
+                            {{task.priority|capfirst}}
+
+                        </td>
+
+                        <td
+                            class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
+                            {{task.due_date}}
+
+                        </td>
+                        <td
+                            class="whitespace-no-wrap hidden py-4 text-sm font-normal text-gray-500 sm:px-6 lg:table-cell">
+                            {% if task.mark_as_completed %}
+                            Completed
+                            {% else %}
+                            Incomplete
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
